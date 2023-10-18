@@ -3,12 +3,18 @@ import Layout, { siteTitle } from '../components/layout';
 import utilStyles from '../styles/utils.module.css';
 import { getSortedPostsData } from '../lib/posts';
 import Link from 'next/link';
+import { GetStaticProps } from 'next';
+import Date from '../components/date';
 
-export async function getStaticProps() {
-  const allPostsData = getSortedPostsData();
-  return { props: { allPostsData } };
-}
-export default function Home({ allPostsData }) {
+export default function Home({
+  allPostsData,
+}: {
+  allPostsData: {
+    date: string;
+    title: string;
+    id: string;
+  }[];
+}): JSX.Element {
   return (
     <Layout home>
       <Head>
@@ -28,7 +34,9 @@ export default function Home({ allPostsData }) {
             <li key={id} className={utilStyles.listItem}>
               <Link href={`/posts/${id}`}>{title}</Link>
               <br />
-              <small className={utilStyles.lightText}>{date}</small>
+              <small className={utilStyles.lightText}>
+                <Date dateString={date} />
+              </small>
             </li>
           ))}
         </ul>
@@ -36,3 +44,12 @@ export default function Home({ allPostsData }) {
     </Layout>
   );
 }
+
+export const getStaticProps: GetStaticProps = async () => {
+  const allPostsData = getSortedPostsData();
+  return {
+    props: {
+      allPostsData,
+    },
+  };
+};
